@@ -40,11 +40,20 @@ class Data
 
     public function set($key, $value)
     {
-        $exploded = explode('.', $key);
-        if (count($exploded) == 2) {
-            $this->config[$this->context][$exploded[0]][$exploded[1]] = $value;
-        }
+        $keys = explode('.', $key);
+        $this->config[$this->context] = $this->setValue($keys, $value, $this->config[$this->context]);
         $this->config[$this->context][$key] = $value;
+    }
+    
+    private function setValue($keys, $value, $config)
+    {
+        if(!empty($keys)) {
+            $key = array_shift($keys);
+            $config[$key] = $this->setValue($keys, $value, $config[$key]);
+            return $config;
+        } else {
+            return $value;
+        }
     }
 
 }

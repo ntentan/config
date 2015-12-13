@@ -3,13 +3,13 @@ namespace ntentan\config\tests;
 
 require 'vendor/autoload.php';
 
-use ntentan\config\Config;
+use ntentan\config\ConfigManager;
 
 class ConfigTests extends \PHPUnit_Framework_TestCase
 {   
     public function testPlain() 
     {
-        Config::init(__DIR__ . '/../fixtures/config/plain');
+        ConfigManager::init(__DIR__ . '/../fixtures/config/plain');
         $config = [
             'app.debug' => true,
             'app.caching.driver' => 'redis',
@@ -43,20 +43,20 @@ class ConfigTests extends \PHPUnit_Framework_TestCase
             ),
         ];
         $this->runArrayAssertions($config);
-        $this->assertEquals('default', Config::get('unset', 'default'));
-        $this->assertEquals(null, Config::get('unset'));
+        $this->assertEquals('default', ConfigManager::get('unset', 'default'));
+        $this->assertEquals(null, ConfigManager::get('unset'));
     }
     
     private function runArrayAssertions($config)
     {
         foreach($config as $key => $value) {
-            $this->assertEquals($value, Config::get($key));
+            $this->assertEquals($value, ConfigManager::get($key));
         }        
     }
     
     public function testContextualized()
     {
-        Config::init(__DIR__ . '/../fixtures/config/contexts');
+        ConfigManager::init(__DIR__ . '/../fixtures/config/contexts');
         $config = array (
                 'default' => 
                 array (
@@ -163,9 +163,9 @@ class ConfigTests extends \PHPUnit_Framework_TestCase
                 'password' => 'root',
                 'name' => 'production',
             ),
-            Config::get('db')
+            ConfigManager::get('db')
         );
-        Config::setContext('test');
+        ConfigManager::setContext('test');
         $this->runArrayAssertions($config['test']);
         
         $this->assertEquals(
@@ -176,16 +176,16 @@ class ConfigTests extends \PHPUnit_Framework_TestCase
                 'password' => NULL,
                 'name' => 'test',
             ),
-            Config::get('db')
+            ConfigManager::get('db')
         );
         
-        Config::setContext('production');
+        ConfigManager::setContext('production');
         $this->runArrayAssertions($config['production']);
     }
     
     public function testSet()
     {
-        Config::init(__DIR__ . '/../fixtures/config/contexts');
+        ConfigManager::init(__DIR__ . '/../fixtures/config/contexts');
         $this->assertEquals(
             array (
                 'datastore' => 'mysql',
@@ -194,9 +194,9 @@ class ConfigTests extends \PHPUnit_Framework_TestCase
                 'password' => 'root',
                 'name' => 'production',
             ),
-            Config::get('db')
+            ConfigManager::get('db')
         );
-        Config::set('db.name', 'changed');
+        ConfigManager::set('db.name', 'changed');
         $this->assertEquals(
             array (
                 'datastore' => 'mysql',
@@ -205,14 +205,14 @@ class ConfigTests extends \PHPUnit_Framework_TestCase
                 'password' => 'root',
                 'name' => 'changed',
             ),
-            Config::get('db')
+            ConfigManager::get('db')
         );
-        $this->assertEquals('changed', Config::get('db.name'));
+        $this->assertEquals('changed', ConfigManager::get('db.name'));
     }
     
     public function testConfigFile()
     {
-        Config::init(__DIR__ . '/../fixtures/config/file.php');
-        $this->assertEquals(true, Config::get('dump'));
+        ConfigManager::init(__DIR__ . '/../fixtures/config/file.php');
+        $this->assertEquals(true, ConfigManager::get('dump'));
     }
 }

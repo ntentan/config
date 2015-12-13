@@ -2,7 +2,7 @@
 
 namespace ntentan\config;
 
-class Config
+class ConfigManager
 {
     /**
      *
