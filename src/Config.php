@@ -15,9 +15,9 @@ class Config
         self::$data = new Data($path);
     }
     
-    public static function get($key)
+    public static function get($key, $default = null)
     {
-        return self::$data->get($key);
+        return self::$data->isKeySet($key) ? self::$data->get($key) : $default;
     }
     
     public static function set($key, $value)

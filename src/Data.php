@@ -10,18 +10,27 @@ class Data
 
     public function __construct($path)
     {
-        $dir = new Directory($path);
-        $this->config = ['default' => $dir->parse()];
-        foreach ($dir->getContexts() as $context) {
-            $this->config[$context] = array_merge(
-                $this->config['default'], $dir->parse($context)
-            );
+        if(is_dir($path)) {
+            $dir = new Directory($path);
+            $this->config = ['default' => $dir->parse()];
+            foreach ($dir->getContexts() as $context) {
+                $this->config[$context] = array_merge(
+                    $this->config['default'], $dir->parse($context)
+                );
+            }
+        } else if(is_file($path)) {
+            $this->config = File::read($path);
         }
+    }
+    
+    public function isKeySet($key)
+    {
+        return isset($this->config[$this->context][$key]);
     }
 
     public function get($key)
     {
-        if (isset($this->config[$this->context][$key])) {
+        if ($this->isKeySet($key)) {
             return $this->config[$this->context][$key];
         }
         return null;
