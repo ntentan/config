@@ -5,17 +5,20 @@ class File
 {
     public static function read($file, $prefix = null)
     {
+        return self::expand(require $file, $prefix);
+    }
+    
+    private static function expand($array, $prefix)
+    {
         $config = [];
-        $dot = $prefix ? "$prefix." : "";
-        $fileContents = require("$file");
-        if(is_array($fileContents)) {
-            foreach($fileContents as $key => $value) {
-                $config["{$dot}{$key}"] = $value;
+        if(is_array($array)) {
+            $dot = $prefix ? "$prefix." : "";
+            foreach($array as $key => $value) {
+                $config[$dot.$key] = $value;
+                $config += self::expand($value, $dot.$key);
             }
-            if($prefix) {
-                $config[$prefix] = $fileContents;
-            }
-        }        
+            $config[$prefix] = $array;
+        }
         return $config;
     }
 }

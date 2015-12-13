@@ -12,6 +12,8 @@ class ConfigTests extends \PHPUnit_Framework_TestCase
         Config::init(__DIR__ . '/../fixtures/config/plain');
         $config = [
             'app.debug' => true,
+            'app.caching.driver' => 'redis',
+            'app.caching.host' => 'redis.mytestserver.tld',
             'app.caching' => 
             array (
               'driver' => 'redis',
