@@ -29,9 +29,4 @@ class Config
     {
         self::$data->setContext($context);
     }
-    
-    public static function reset()
-    {
-        self::$data = null;
-    }
 }

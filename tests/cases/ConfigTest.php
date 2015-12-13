@@ -41,6 +41,8 @@ class ConfigTests extends \PHPUnit_Framework_TestCase
             ),
         ];
         $this->runArrayAssertions($config);
+        $this->assertEquals('default', Config::get('unset', 'default'));
+        $this->assertEquals(null, Config::get('unset'));
     }
     
     private function runArrayAssertions($config)
@@ -204,5 +206,11 @@ class ConfigTests extends \PHPUnit_Framework_TestCase
             Config::get('db')
         );
         $this->assertEquals('changed', Config::get('db.name'));
+    }
+    
+    public function testConfigFile()
+    {
+        Config::init(__DIR__ . '/../fixtures/config/file.php');
+        $this->assertEquals(true, Config::get('dump'));
     }
 }

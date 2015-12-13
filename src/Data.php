@@ -19,7 +19,7 @@ class Data
                 );
             }
         } else if(is_file($path)) {
-            $this->config = File::read($path);
+            $this->config[$this->context] = File::read($path);
         }
     }
     
@@ -30,20 +30,12 @@ class Data
 
     public function get($key)
     {
-        if ($this->isKeySet($key)) {
-            return $this->config[$this->context][$key];
-        }
-        return null;
+        return $this->config[$this->context][$key];
     }
 
     public function setContext($context)
     {
         $this->context = $context;
-    }
-
-    public function dump()
-    {
-        return $this->config;
     }
 
     public function set($key, $value)
