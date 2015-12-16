@@ -2,13 +2,13 @@
 
 namespace ntentan\config;
 
-class ConfigManager
+class Config
 {
     /**
      *
      * @var Data
      */
-    private static $data;
+    protected static $data;
     
     public static function init($path)
     {
