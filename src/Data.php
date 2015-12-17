@@ -8,18 +8,18 @@ class Data
     private $config;
     private $context = 'default';
 
-    public function __construct($path)
+    public function __construct($path = null)
     {
         if(is_dir($path)) {
             $dir = new Directory($path);
-            $this->config = ['default' => $dir->parse()];
+            $this->config = ['default' => $this->expand($dir->parse())];
             foreach ($dir->getContexts() as $context) {
                 $this->config[$context] = array_merge(
-                    $this->config['default'], $dir->parse($context)
+                    $this->config['default'], $this->expand($dir->parse($context))
                 );
             }
         } else if(is_file($path)) {
-            $this->config[$this->context] = File::read($path);
+            $this->config[$this->context] = $this->expand(File::read($path));
         }
     }
     
@@ -43,6 +43,7 @@ class Data
         $keys = explode('.', $key);
         $this->config[$this->context] = $this->setValue($keys, $value, $this->config[$this->context]);
         $this->config[$this->context][$key] = $value;
+        var_dump($this->config);
     }
     
     private function setValue($keys, $value, $config)
@@ -56,4 +57,17 @@ class Data
         }
     }
 
+    private function expand($array, $prefix = null)
+    {
+        $config = [];
+        if(is_array($array)) {
+            $dot = $prefix ? "$prefix." : "";
+            foreach($array as $key => $value) {
+                $config[$dot.$key] = $value;
+                $config += $this->expand($value, $dot.$key);
+            }
+            $config[$prefix] = $array;
+        }
+        return $config;
+    }    
 }

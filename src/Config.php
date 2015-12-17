@@ -15,14 +15,26 @@ class Config
         static::$data = new Data($path);
     }
     
+    /**
+     * 
+     * @return Data
+     */
+    private static function getData()
+    {
+        if(!static::$data) {
+            static::$data = new Data();
+        }
+        return static::$data;
+    }
+    
     public static function get($key, $default = null)
     {
-        return static::$data->isKeySet($key) ? static::$data->get($key) : $default;
+        return static::getData()->isKeySet($key) ? static::$data->get($key) : $default;
     }
     
     public static function set($key, $value)
     {
-        return static::$data->set($key, $value);
+        return static::getData()->set($key, $value);
     }
     
     public static function setContext($context)
