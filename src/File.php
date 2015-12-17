@@ -3,8 +3,8 @@ namespace ntentan\config;
 
 class File
 {
-    public static function read($file, $prefix = null)
+    public static function read($file)
     {
-        return self::expand(require $file, $prefix);
+        return require $file;
     }
 }
