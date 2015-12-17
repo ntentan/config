@@ -43,6 +43,9 @@ class Data
         $keys = explode('.', $key);
         $this->config[$this->context] = $this->setValue($keys, $value, $this->config[$this->context]);
         $this->config[$this->context][$key] = $value;
+        if(is_array($value)) {
+            $this->config[$this->context] += $this->expand($value, $key);
+        }
     }
     
     private function setValue($keys, $value, $config)
