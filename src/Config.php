@@ -41,4 +41,9 @@ class Config
     {
         static::$data->setContext($context);
     }
+    
+    public static function reset()
+    {
+        static::$data = null;
+    }    
 }
