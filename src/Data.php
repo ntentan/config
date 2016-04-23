@@ -8,18 +8,18 @@ class Data
     private $config;
     private $context = 'default';
 
-    public function __construct($path = null)
+    public function __construct($path = null, $namespace = null)
     {
         if(is_dir($path)) {
             $dir = new Directory($path);
-            $this->config = ['default' => $this->expand($dir->parse())];
+            $this->config = ['default' => $this->expand($dir->parse(), $namespace)];
             foreach ($dir->getContexts() as $context) {
                 $this->config[$context] = array_merge(
-                    $this->config['default'], $this->expand($dir->parse($context))
+                    $this->config['default'], $this->expand($dir->parse($context), $namespace)
                 );
             }
         } else if(is_file($path)) {
-            $this->config[$this->context] = $this->expand(File::read($path));
+            $this->config[$this->context] = $this->expand(File::read($path), $namespace);
         }
     }
     
@@ -59,16 +59,18 @@ class Data
         }
     }
 
-    private function expand($array, $prefix = null)
+    private function expand($array, $namespace, $prefix = null)
     {
         $config = [];
         if(is_array($array)) {
-            $dot = $prefix ? "$prefix." : "";
+            $dottedNamespace = $namespace ? "$namespace:" : "";
+            $dottedPrefix = $prefix ? "$prefix." : "";
             foreach($array as $key => $value) {
-                $config[$dot.$key] = $value;
-                $config += $this->expand($value, $dot.$key);
+                $newPrefix = $dottedNamespace.$dottedPrefix.$key;
+                $config[$newPrefix] = $value;
+                $config += $this->expand($value, null, $newPrefix);
             }
-            $config[$prefix] = $array;
+            if($prefix) $config[$prefix] = $array;
         }
         return $config;
     }    

@@ -1,23 +1,34 @@
 <?php
-namespace ntentan\config\tests\cases;
 
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+namespace ntentan\config\tests\cases;
 use ntentan\config\Config;
 
-class ConfigTests extends \ntentan\config\tests\lib\ConfigTestBase
-{   
+/**
+ * Description of NamespaceTest
+ *
+ * @author ekow
+ */
+class NamespaceTest extends \ntentan\config\tests\lib\ConfigTestBase
+{
     public function testPlain() 
     {
-        Config::readPath(__DIR__ . '/../fixtures/config/plain');
+        Config::readPath(__DIR__ . '/../fixtures/config/plain', 'nmspc');
         $config = [
-            'app.debug' => true,
-            'app.caching.driver' => 'redis',
-            'app.caching.host' => 'redis.mytestserver.tld',
-            'app.caching' => 
+            'nmspc:app.debug' => true,
+            'nmspc:app.caching.driver' => 'redis',
+            'nmspc:app.caching.host' => 'redis.mytestserver.tld',
+            'nmspc:app.caching' => 
             array (
               'driver' => 'redis',
               'host' => 'redis.mytestserver.tld',
             ),
-            'app' => 
+            'nmspc:app' => 
             array (
               'debug' => true,
               'caching' => 
@@ -26,12 +37,12 @@ class ConfigTests extends \ntentan\config\tests\lib\ConfigTestBase
                 'host' => 'redis.mytestserver.tld',
               ),
             ),
-            'db.datastore' => 'mysql',
-            'db.host' => 'localhost',
-            'db.user' => 'root',
-            'db.password' => 'root',
-            'db.name' => 'production',
-            'db' => 
+            'nmspc:db.datastore' => 'mysql',
+            'nmspc:db.host' => 'localhost',
+            'nmspc:db.user' => 'root',
+            'nmspc:db.password' => 'root',
+            'nmspc:db.name' => 'production',
+            'nmspc:db' => 
             array (
               'datastore' => 'mysql',
               'host' => 'localhost',
@@ -43,21 +54,21 @@ class ConfigTests extends \ntentan\config\tests\lib\ConfigTestBase
         $this->runArrayAssertions($config);
         $this->assertEquals('default', Config::get('unset', 'default'));
         $this->assertEquals(null, Config::get('unset'));
-    }
+    }   
     
     public function testContextualized()
     {
-        Config::readPath(__DIR__ . '/../fixtures/config/contexts');
+        Config::readPath(__DIR__ . '/../fixtures/config/contexts', 'nmspc');
         $config = array (
                 'default' => 
                 array (
-                  'app.debug' => false,
-                  'app.caching' => 
+                  'nmspc:app.debug' => false,
+                  'nmspc:app.caching' => 
                   array (
                     'driver' => 'redis',
                     'host' => 'redis.mytestserver.tld',
                   ),
-                  'app' => 
+                  'nmspc:app' => 
                   array (
                     'debug' => false,
                     'caching' => 
@@ -66,12 +77,12 @@ class ConfigTests extends \ntentan\config\tests\lib\ConfigTestBase
                       'host' => 'redis.mytestserver.tld',
                     ),
                   ),
-                  'db.datastore' => 'mysql',
-                  'db.host' => 'localhost',
-                  'db.user' => 'root',
-                  'db.password' => 'root',
-                  'db.name' => 'production',
-                  'db' => 
+                  'nmspc:db.datastore' => 'mysql',
+                  'nmspc:db.host' => 'localhost',
+                  'nmspc:db.user' => 'root',
+                  'nmspc:db.password' => 'root',
+                  'nmspc:db.name' => 'production',
+                  'nmspc:db' => 
                   array (
                     'datastore' => 'mysql',
                     'host' => 'localhost',
@@ -82,13 +93,13 @@ class ConfigTests extends \ntentan\config\tests\lib\ConfigTestBase
                 ),
                 'production' => 
                 array (
-                  'app.debug' => false,
-                  'app.caching' => 
+                  'nmspc:app.debug' => false,
+                  'nmspc:app.caching' => 
                   array (
                     'driver' => 'redis',
                     'host' => 'redis.mytestserver.tld',
                   ),
-                  'app' => 
+                  'nmspc:app' => 
                   array (
                     'debug' => false,
                     'caching' => 
@@ -97,12 +108,12 @@ class ConfigTests extends \ntentan\config\tests\lib\ConfigTestBase
                       'host' => 'redis.mytestserver.tld',
                     ),
                   ),
-                  'db.datastore' => 'mysql',
-                  'db.host' => 'localhost',
-                  'db.user' => 'root',
-                  'db.password' => 'root',
-                  'db.name' => 'production',
-                  'db' => 
+                  'nmspc:db.datastore' => 'mysql',
+                  'nmspc:db.host' => 'localhost',
+                  'nmspc:db.user' => 'root',
+                  'nmspc:db.password' => 'root',
+                  'nmspc:db.name' => 'production',
+                  'nmspc:db' => 
                   array (
                     'datastore' => 'mysql',
                     'host' => 'localhost',
@@ -113,13 +124,13 @@ class ConfigTests extends \ntentan\config\tests\lib\ConfigTestBase
                 ),
                 'test' => 
                 array (
-                  'app.debug' => true,
-                  'app.caching' => 
+                  'nmspc:app.debug' => true,
+                  'nmspc:app.caching' => 
                   array (
                     'driver' => 'file',
                     'host' => '/cache/dir',
                   ),
-                  'app' => 
+                  'nmspc:app' => 
                   array (
                     'debug' => true,
                     'caching' => 
@@ -128,12 +139,12 @@ class ConfigTests extends \ntentan\config\tests\lib\ConfigTestBase
                       'host' => '/cache/dir',
                     ),
                   ),
-                  'db.datastore' => 'mysql',
-                  'db.host' => 'localhost',
-                  'db.user' => 'root',
-                  'db.password' => null,
-                  'db.name' => 'test',
-                  'db' => 
+                  'nmspc:db.datastore' => 'mysql',
+                  'nmspc:db.host' => 'localhost',
+                  'nmspc:db.user' => 'root',
+                  'nmspc:db.password' => null,
+                  'nmspc:db.name' => 'test',
+                  'nmspc:db' => 
                   array (
                     'datastore' => 'mysql',
                     'host' => 'localhost',
@@ -154,7 +165,7 @@ class ConfigTests extends \ntentan\config\tests\lib\ConfigTestBase
                 'password' => 'root',
                 'name' => 'production',
             ),
-            Config::get('db')
+            Config::get('nmspc:db')
         );
         Config::setContext('test');
         $this->runArrayAssertions($config['test']);
@@ -167,43 +178,10 @@ class ConfigTests extends \ntentan\config\tests\lib\ConfigTestBase
                 'password' => NULL,
                 'name' => 'test',
             ),
-            Config::get('db')
+            Config::get('nmspc:db')
         );
         
         Config::setContext('production');
         $this->runArrayAssertions($config['production']);
-    }
-    
-    public function testSet()
-    {
-        Config::readPath(__DIR__ . '/../fixtures/config/contexts');
-        $this->assertEquals(
-            array (
-                'datastore' => 'mysql',
-                'host' => 'localhost',
-                'user' => 'root',
-                'password' => 'root',
-                'name' => 'production',
-            ),
-            Config::get('db')
-        );
-        Config::set('db.name', 'changed');
-        $this->assertEquals(
-            array (
-                'datastore' => 'mysql',
-                'host' => 'localhost',
-                'user' => 'root',
-                'password' => 'root',
-                'name' => 'changed',
-            ),
-            Config::get('db')
-        );
-        $this->assertEquals('changed', Config::get('db.name'));
-    }
-    
-    public function testConfigFile()
-    {
-        Config::readPath(__DIR__ . '/../fixtures/config/file.php');
-        $this->assertEquals(true, Config::get('dump'));
     }
 }
