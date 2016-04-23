@@ -40,12 +40,12 @@ class Config
     
     public static function get($key, $default = null)
     {
-        return static::getData()->isKeySet($key) ? static::$data->get($key) : $default;
+        return self::getData()->isKeySet($key) ? static::$data->get($key) : $default;
     }
     
     public static function set($key, $value)
     {
-        return static::getData()->set($key, $value);
+        return self::getData()->set($key, $value);
     }
     
     public static function setContext($context)
