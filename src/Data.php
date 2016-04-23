@@ -62,16 +62,15 @@ class Data
     private function expand($array, $namespace, $prefix = null)
     {
         $config = [];
-        if(is_array($array)) {
-            $dottedNamespace = $namespace ? "$namespace:" : "";
-            $dottedPrefix = $prefix ? "$prefix." : "";
-            foreach($array as $key => $value) {
-                $newPrefix = $dottedNamespace.$dottedPrefix.$key;
-                $config[$newPrefix] = $value;
-                $config += $this->expand($value, null, $newPrefix);
-            }
-            if($prefix) $config[$prefix] = $array;
+        if(!is_array($array)) return $config;
+        $dottedNamespace = $namespace ? "$namespace:" : "";
+        $dottedPrefix = $prefix ? "$prefix." : "";
+        foreach($array as $key => $value) {
+            $newPrefix = $dottedNamespace.$dottedPrefix.$key;
+            $config[$newPrefix] = $value;
+            $config += $this->expand($value, null, $newPrefix);
         }
+        if($prefix) $config[$prefix] = $array;
         return $config;
     }    
 }
