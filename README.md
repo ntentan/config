@@ -7,5 +7,6 @@ Ntentan Config
 [![Latest Stable Version](https://poser.pugx.org/ntentan/config/version.svg)](https://packagist.org/packages/ntentan/config)
 [![Total Downloads](https://poser.pugx.org/ntentan/config/downloads)](https://packagist.org/packages/ntentan/config)
 
-Provides interface to access data from configuration files held in a 
-directory.
+Config provides a centralized configuration repository through which applications 
+and their components can manage their configuration information. Config can read 
+configurations from single files or from directories (recursively).

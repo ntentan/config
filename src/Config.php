@@ -27,7 +27,7 @@ class Config
     }
     
     /**
-     * 
+     * Get an instance of the Data class
      * @return Data
      */
     private static function getData()
@@ -38,6 +38,12 @@ class Config
         return static::$data;
     }
     
+    /**
+     * Get the value associated with a given configuration key.
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
     public static function get($key, $default = null)
     {
         return self::getData()->isKeySet($key) ? static::$data->get($key) : $default;
