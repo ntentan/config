@@ -4,12 +4,6 @@ namespace ntentan\config\tests\lib;
 
 use ntentan\config\Config;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Description of ConfigTest
  *
@@ -23,4 +17,10 @@ class ConfigTestBase extends \PHPUnit_Framework_TestCase
             $this->assertEquals($value, Config::get($key));
         }        
     }    
+    
+    public function tearDown()
+    {
+        parent::tearDown();
+        Config::reset();
+    }
 }

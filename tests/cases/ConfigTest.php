@@ -2,8 +2,9 @@
 namespace ntentan\config\tests\cases;
 
 use ntentan\config\Config;
+use ntentan\config\tests\lib\ConfigTestBase;
 
-class ConfigTests extends \ntentan\config\tests\lib\ConfigTestBase
+class ConfigTests extends ConfigTestBase
 {   
     public function testPlain() 
     {
@@ -199,6 +200,25 @@ class ConfigTests extends \ntentan\config\tests\lib\ConfigTestBase
             Config::get('db')
         );
         $this->assertEquals('changed', Config::get('db.name'));
+    }
+    
+    public function testEmptySet()
+    {
+        Config::set('db.driver', 'Hello');
+        $this->assertEquals('Hello', Config::get('db.driver'));
+    }
+    
+    public function testEmptySetDirectory()
+    {
+        Config::set('db.driver', [
+            'key1' => 'value1',
+            'key2' => 'value2'
+        ]);
+        $this->assertEquals(
+            ['key1' => 'value1', 'key2' => 'value2'], 
+            Config::get('db.driver')
+        );
+        $this->assertEquals('value1', Config::get('db.driver.key1'));
     }
     
     public function testConfigFile()

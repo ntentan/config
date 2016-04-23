@@ -1,20 +1,15 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace ntentan\config\tests\cases;
 use ntentan\config\Config;
+use ntentan\config\tests\lib\ConfigTestBase;
 
 /**
  * Description of NamespaceTest
  *
  * @author ekow
  */
-class NamespaceTest extends \ntentan\config\tests\lib\ConfigTestBase
+class NamespaceTest extends ConfigTestBase
 {
     public function testPlain() 
     {
@@ -184,4 +179,28 @@ class NamespaceTest extends \ntentan\config\tests\lib\ConfigTestBase
         Config::setContext('production');
         $this->runArrayAssertions($config['production']);
     }
+    
+    public function testEmptySet()
+    {
+        Config::set('nmspc:db.driver', 'Hello');
+        $this->assertEquals('Hello', Config::get('nmspc:db.driver'));
+    }
+    
+    public function testEmptySetDirectory()
+    {
+        Config::set('nmspc:db.driver', [
+            'key1' => 'value1',
+            'key2' => 'value2'
+        ]);
+        $this->assertEquals(
+            ['key1' => 'value1', 'key2' => 'value2'], 
+            Config::get('nmspc:db.driver')
+        );
+    }
+    
+    public function testConfigFile()
+    {
+        Config::readPath(__DIR__ . '/../fixtures/config/file.php', 'nmspc');
+        $this->assertEquals(true, Config::get('nmspc:dump'));
+    }    
 }
