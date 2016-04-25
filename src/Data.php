@@ -52,7 +52,7 @@ class Data
     {
         if(!empty($keys)) {
             $key = array_shift($keys);
-            $config[$key] = $this->setValue($keys, $value, $config[$key]);
+            $config[$key] = $this->setValue($keys, $value, isset($config[$key]) ? $config[$key] : []);
             return $config;
         } else {
             return $value;
