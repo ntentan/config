@@ -2,65 +2,75 @@
 
 namespace ntentan\config;
 
-class Config
+class Config 
 {
-    /**
-     *
-     * @var Data
-     */
-    protected static $data;
-    
-    /**
-     * Read a path and append its contents to the current configuration.
-     * This method will read a path and append the contents of the path to 
-     * the current configuration. The path could either be a directory or a
-     * file. Directories are parsed recursively for config files. First level
-     * sub-directories are used as contexts which can modify some of the 
-     * configuration settings in the main directory.
-     * 
-     * @param string $path The path to read
-     * @param string $namespace The namespace into which the configuration should be read.
-     */
-    public static function readPath($path, $namespace = null)
-    {
-        static::$data = new Data($path, $namespace);
-    }
-    
-    /**
-     * Get an instance of the Data class
-     * @return Data
-     */
-    private static function getData()
-    {
-        if(!static::$data) {
-            static::$data = new Data();
+
+    private $config;
+    private $context = 'default';
+
+    public function __construct($path = null, $namespace = null) {
+        if (is_dir($path)) {
+            $dir = new Directory($path);
+            $this->config = ['default' => $this->expand($dir->parse(), $namespace)];
+            foreach ($dir->getContexts() as $context) {
+                $this->config[$context] = array_merge(
+                        $this->config['default'], $this->expand($dir->parse($context), $namespace)
+                );
+            }
+        } else if (is_file($path)) {
+            $this->config[$this->context] = $this->expand(File::read($path), $namespace);
         }
-        return static::$data;
     }
     
-    /**
-     * Get the value associated with a given configuration key.
-     * @param string $key
-     * @param mixed $default
-     * @return mixed
-     */
-    public static function get($key, $default = null)
-    {
-        return self::getData()->isKeySet($key) ? static::$data->get($key) : $default;
+    public static function readDirectory($path, $namespace = null) {
+        return new Config($path, $namespace);
     }
-    
-    public static function set($key, $value)
-    {
-        return self::getData()->set($key, $value);
+
+    public function isKeySet($key) {
+        return isset($this->config[$this->context][$key]);
     }
-    
-    public static function setContext($context)
-    {
-        static::$data->setContext($context);
+
+    public function get($key) {
+        return $this->config[$this->context][$key];
     }
-    
-    public static function reset()
-    {
-        static::$data = null;
-    }    
+
+    public function setContext($context) {
+        $this->context = $context;
+    }
+
+    public function set($key, $value) {
+        $keys = explode('.', $key);
+        $this->config[$this->context] = $this->setValue($keys, $value, $this->config[$this->context]);
+        $this->config[$this->context][$key] = $value;
+        if (is_array($value)) {
+            $this->config[$this->context] += $this->expand($value, null, $key);
+        }
+    }
+
+    private function setValue($keys, $value, $config) {
+        if (!empty($keys)) {
+            $key = array_shift($keys);
+            $config[$key] = $this->setValue($keys, $value, isset($config[$key]) ? $config[$key] : []);
+            return $config;
+        } else {
+            return $value;
+        }
+    }
+
+    private function expand($array, $namespace, $prefix = null) {
+        $config = [];
+        if (!is_array($array))
+            return $config;
+        $dottedNamespace = $namespace ? "$namespace:" : "";
+        $dottedPrefix = $prefix ? "$prefix." : "";
+        foreach ($array as $key => $value) {
+            $newPrefix = $dottedNamespace . $dottedPrefix . $key;
+            $config[$newPrefix] = $value;
+            $config += $this->expand($value, null, $newPrefix);
+        }
+        if ($prefix)
+            $config[$prefix] = $array;
+        return $config;
+    }
+
 }
