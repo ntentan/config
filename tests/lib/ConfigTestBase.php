@@ -11,16 +11,10 @@ use ntentan\config\Config;
  */
 class ConfigTestBase extends \PHPUnit_Framework_TestCase
 {
-    protected function runArrayAssertions($config)
+    protected function runArrayAssertions($expected, $config)
     {
-        foreach($config as $key => $value) {
-            $this->assertEquals($value, Config::get($key));
+        foreach($expected as $key => $value) {
+            $this->assertEquals($value, $config->get($key));
         }        
-    }    
-    
-    public function tearDown()
-    {
-        parent::tearDown();
-        Config::reset();
-    }
+    }   
 }

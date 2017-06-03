@@ -22,7 +22,7 @@ class Config
         }
     }
     
-    public static function readDirectory($path, $namespace = null) {
+    public static function readPath($path, $namespace = null) {
         return new Config($path, $namespace);
     }
 
@@ -30,8 +30,8 @@ class Config
         return isset($this->config[$this->context][$key]);
     }
 
-    public function get($key) {
-        return $this->config[$this->context][$key];
+    public function get($key, $default = null) {
+        return isset($this->config[$this->context][$key]) ? $this->config[$this->context][$key] : $default;
     }
 
     public function setContext($context) {

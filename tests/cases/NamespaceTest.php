@@ -13,8 +13,8 @@ class NamespaceTest extends ConfigTestBase
 {
     public function testPlain() 
     {
-        Config::readPath(__DIR__ . '/../fixtures/config/plain', 'nmspc');
-        $config = [
+        $config = Config::readPath(__DIR__ . '/../fixtures/config/plain', 'nmspc');
+        $expected = [
             'nmspc:app.debug' => true,
             'nmspc:app.caching.driver' => 'redis',
             'nmspc:app.caching.host' => 'redis.mytestserver.tld',
@@ -46,15 +46,15 @@ class NamespaceTest extends ConfigTestBase
               'name' => 'production',
             ),
         ];
-        $this->runArrayAssertions($config);
-        $this->assertEquals('default', Config::get('unset', 'default'));
-        $this->assertEquals(null, Config::get('unset'));
+        $this->runArrayAssertions($expected, $config);
+        $this->assertEquals('default', $config->get('unset', 'default'));
+        $this->assertEquals(null, $config->get('unset'));
     }   
     
     public function testContextualized()
     {
-        Config::readPath(__DIR__ . '/../fixtures/config/contexts', 'nmspc');
-        $config = array (
+        $config = Config::readPath(__DIR__ . '/../fixtures/config/contexts', 'nmspc');
+        $expected = array (
                 'default' => 
                 array (
                   'nmspc:app.debug' => false,
@@ -150,7 +150,7 @@ class NamespaceTest extends ConfigTestBase
                 ),
               );
         
-        $this->runArrayAssertions($config['default']);
+        $this->runArrayAssertions($expected['default'], $config);
         
         $this->assertEquals(
             array (
@@ -160,10 +160,10 @@ class NamespaceTest extends ConfigTestBase
                 'password' => 'root',
                 'name' => 'production',
             ),
-            Config::get('nmspc:db')
+            $config->get('nmspc:db')
         );
-        Config::setContext('test');
-        $this->runArrayAssertions($config['test']);
+        $config->setContext('test');
+        $this->runArrayAssertions($expected['test'], $config);
         
         $this->assertEquals(
             array (
@@ -173,34 +173,36 @@ class NamespaceTest extends ConfigTestBase
                 'password' => NULL,
                 'name' => 'test',
             ),
-            Config::get('nmspc:db')
+            $config->get('nmspc:db')
         );
         
-        Config::setContext('production');
-        $this->runArrayAssertions($config['production']);
+        $config->setContext('production');
+        $this->runArrayAssertions($expected['production'], $config);
     }
     
     public function testEmptySet()
     {
-        Config::set('nmspc:db.driver', 'Hello');
-        $this->assertEquals('Hello', Config::get('nmspc:db.driver'));
+        $config = Config::readPath(__DIR__ . '/../fixtures/config/plain', 'nmspc');
+        $config->set('nmspc:db.driver', 'Hello');
+        $this->assertEquals('Hello', $config->get('nmspc:db.driver'));
     }
     
     public function testEmptySetDirectory()
     {
-        Config::set('nmspc:db.driver', [
+        $config = Config::readPath(__DIR__ . '/../fixtures/config/plain', 'nmspc');
+        $config->set('nmspc:db.driver', [
             'key1' => 'value1',
             'key2' => 'value2'
         ]);
         $this->assertEquals(
             ['key1' => 'value1', 'key2' => 'value2'], 
-            Config::get('nmspc:db.driver')
+            $config->get('nmspc:db.driver')
         );
     }
     
     public function testConfigFile()
     {
-        Config::readPath(__DIR__ . '/../fixtures/config/file.php', 'nmspc');
-        $this->assertEquals(true, Config::get('nmspc:dump'));
+        $config = Config::readPath(__DIR__ . '/../fixtures/config/file.php', 'nmspc');
+        $this->assertEquals(true, $config->get('nmspc:dump'));
     }    
 }
