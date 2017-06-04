@@ -7,8 +7,8 @@ class Config
 
     private $config;
     private $context = 'default';
-
-    public function __construct($path = null, $namespace = null) {
+    
+    public function readPath($path, $namespace = null) {
         if (is_dir($path)) {
             $dir = new Directory($path);
             $this->config = ['default' => $this->expand($dir->parse(), $namespace)];
@@ -19,11 +19,9 @@ class Config
             }
         } else if (is_file($path)) {
             $this->config[$this->context] = $this->expand(File::read($path), $namespace);
+        } else {
+            throw new \ntentan\utils\exceptions\FileNotFoundException($path);
         }
-    }
-    
-    public static function readPath($path, $namespace = null) {
-        return new Config($path, $namespace);
     }
 
     public function isKeySet($key) {
