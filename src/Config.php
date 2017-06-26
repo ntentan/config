@@ -2,23 +2,35 @@
 
 namespace ntentan\config;
 
-class Config 
+class Config
 {
 
     private $config;
     private $context = 'default';
     
-    public function readPath($path, $namespace = null) {
+    /**
+     * Reads the configurations stored at a given path.
+     * 
+     * Path could either point to a directory or a specific file. In the case of
+     * a file, the contents of the file are read into the config object. However,
+     * in the case of a directory, the contents of all the files in the directory 
+     * are read into the config file with configurations from each file prefixed with
+     * the file name.
+     *
+     * @param string $path
+     * @return void
+     */
+    public function readPath($path) {
         if (is_dir($path)) {
             $dir = new Directory($path);
-            $this->config = ['default' => $this->expand($dir->parse(), $namespace)];
+            $this->config = ['default' => $this->expand($dir->parse())];
             foreach ($dir->getContexts() as $context) {
                 $this->config[$context] = array_merge(
-                        $this->config['default'], $this->expand($dir->parse($context), $namespace)
+                    $this->config['default'], $this->expand($dir->parse($context))
                 );
             }
         } else if (is_file($path)) {
-            $this->config[$this->context] = $this->expand(File::read($path), $namespace);
+            $this->config[$this->context] = $this->expand(File::read($path));
         } else {
             throw new \ntentan\utils\exceptions\FileNotFoundException($path);
         }
@@ -41,7 +53,7 @@ class Config
         $this->config[$this->context] = $this->setValue($keys, $value, $this->config[$this->context]);
         $this->config[$this->context][$key] = $value;
         if (is_array($value)) {
-            $this->config[$this->context] += $this->expand($value, null, $key);
+            $this->config[$this->context] += $this->expand($value, $key);
         }
     }
 
@@ -55,16 +67,15 @@ class Config
         }
     }
 
-    private function expand($array, $namespace, $prefix = null) {
+    private function expand($array, $prefix = null) {
         $config = [];
         if (!is_array($array))
             return $config;
-        $dottedNamespace = $namespace ? "$namespace:" : "";
         $dottedPrefix = $prefix ? "$prefix." : "";
         foreach ($array as $key => $value) {
-            $newPrefix = $dottedNamespace . $dottedPrefix . $key;
+            $newPrefix = $dottedPrefix . $key;
             $config[$newPrefix] = $value;
-            $config += $this->expand($value, null, $newPrefix);
+            $config += $this->expand($value, $newPrefix);
         }
         if ($prefix)
             $config[$prefix] = $array;

@@ -8,7 +8,7 @@ class ConfigTests extends ConfigTestBase
 {   
     public function testPlain() 
     {
-        $config = Config::readPath(__DIR__ . '/../fixtures/config/plain');
+        $this->config->readPath(__DIR__ . '/../fixtures/config/plain');
         $expected = [
             'app.debug' => true,
             'app.caching.driver' => 'redis',
@@ -41,14 +41,14 @@ class ConfigTests extends ConfigTestBase
               'name' => 'production',
             ),
         ];
-        $this->runArrayAssertions($expected, $config);
-        $this->assertEquals('default', $config->get('unset', 'default'));
-        $this->assertEquals(null, $config->get('unset'));
+        $this->runArrayAssertions($expected, $this->config);
+        $this->assertEquals('default', $this->config->get('unset', 'default'));
+        $this->assertEquals(null, $this->config->get('unset'));
     }
     
     public function testContextualized()
     {
-        $config = Config::readPath(__DIR__ . '/../fixtures/config/contexts');
+        $this->config->readPath(__DIR__ . '/../fixtures/config/contexts');
         $expected = array (
                 'default' => 
                 array (
@@ -145,7 +145,7 @@ class ConfigTests extends ConfigTestBase
                 ),
               );
         
-        $this->runArrayAssertions($expected['default'], $config);
+        $this->runArrayAssertions($expected['default'], $this->config);
         
         $this->assertEquals(
             array (
@@ -155,10 +155,10 @@ class ConfigTests extends ConfigTestBase
                 'password' => 'root',
                 'name' => 'production',
             ),
-            $config->get('db')
+            $this->config->get('db')
         );
-        $config->setContext('test');
-        $this->runArrayAssertions($expected['test'], $config);
+        $this->config->setContext('test');
+        $this->runArrayAssertions($expected['test'], $this->config);
         
         $this->assertEquals(
             array (
@@ -168,16 +168,16 @@ class ConfigTests extends ConfigTestBase
                 'password' => NULL,
                 'name' => 'test',
             ),
-            $config->get('db')
+            $this->config->get('db')
         );
         
-        $config->setContext('production');
-        $this->runArrayAssertions($expected['production'], $config);
+        $this->config->setContext('production');
+        $this->runArrayAssertions($expected['production'], $this->config);
     }
     
     public function testSet()
     {
-        $config = Config::readPath(__DIR__ . '/../fixtures/config/contexts');
+        $this->config->readPath(__DIR__ . '/../fixtures/config/contexts');
         $this->assertEquals(
             array (
                 'datastore' => 'mysql',
@@ -186,9 +186,9 @@ class ConfigTests extends ConfigTestBase
                 'password' => 'root',
                 'name' => 'production',
             ),
-            $config->get('db')
+            $this->config->get('db')
         );
-        $config->set('db.name', 'changed');
+        $this->config->set('db.name', 'changed');
         $this->assertEquals(
             array (
                 'datastore' => 'mysql',
@@ -197,9 +197,9 @@ class ConfigTests extends ConfigTestBase
                 'password' => 'root',
                 'name' => 'changed',
             ),
-            $config->get('db')
+            $this->config->get('db')
         );
-        $this->assertEquals('changed', $config->get('db.name'));
+        $this->assertEquals('changed', $this->config->get('db.name'));
     }
     
     public function testEmptySet()
@@ -225,7 +225,7 @@ class ConfigTests extends ConfigTestBase
     
     public function testConfigFile()
     {
-        $config = Config::readPath(__DIR__ . '/../fixtures/config/file.php');
-        $this->assertEquals(true, $config->get('dump'));
+        $this->config->readPath(__DIR__ . '/../fixtures/config/file.php');
+        $this->assertEquals(true, $this->config->get('dump'));
     }
 }

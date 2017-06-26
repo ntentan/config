@@ -2,8 +2,7 @@
 <phpunit>
     <testsuites>
         <testsuite name="main">
-            <file>cases/NamespaceTest.php</file>
-            <file>cases/ConfigTest.php</file>
+            <file>cases/ConfigTests.php</file>
         </testsuite>
     </testsuites>
 </phpunit>
