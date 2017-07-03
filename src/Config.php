@@ -18,7 +18,7 @@ class Config
      * the file name.
      *
      * @param string $path
-     * @return void
+     * @return Config
      */
     public function readPath($path) {
         if (is_dir($path)) {
@@ -34,6 +34,7 @@ class Config
         } else {
             throw new \ntentan\utils\exceptions\FileNotFoundException($path);
         }
+        return $this;
     }
 
     public function isKeySet($key) {
