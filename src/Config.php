@@ -2,12 +2,12 @@
 
 namespace ntentan\config;
 
-class Config
+class Config implements \ArrayAccess
 {
 
     private $config;
     private $context = 'default';
-    
+
     /**
      * Reads the configurations stored at a given path.
      * 
@@ -20,13 +20,14 @@ class Config
      * @param string $path
      * @return Config
      */
-    public function readPath($path) {
+    public function readPath($path)
+    {
         if (is_dir($path)) {
             $dir = new Directory($path);
             $this->config = ['default' => $this->expand($dir->parse())];
             foreach ($dir->getContexts() as $context) {
                 $this->config[$context] = array_merge(
-                    $this->config['default'], $this->expand($dir->parse($context))
+                        $this->config['default'], $this->expand($dir->parse($context))
                 );
             }
         } else if (is_file($path)) {
@@ -37,19 +38,23 @@ class Config
         return $this;
     }
 
-    public function isKeySet($key) {
+    public function isKeySet($key)
+    {
         return isset($this->config[$this->context][$key]);
     }
 
-    public function get($key, $default = null) {
+    public function get($key, $default = null)
+    {
         return isset($this->config[$this->context][$key]) ? $this->config[$this->context][$key] : $default;
     }
 
-    public function setContext($context) {
+    public function setContext($context)
+    {
         $this->context = $context;
     }
 
-    public function set($key, $value) {
+    public function set($key, $value)
+    {
         $keys = explode('.', $key);
         $this->config[$this->context] = $this->setValue($keys, $value, $this->config[$this->context]);
         $this->config[$this->context][$key] = $value;
@@ -58,7 +63,8 @@ class Config
         }
     }
 
-    private function setValue($keys, $value, $config) {
+    private function setValue($keys, $value, $config)
+    {
         if (!empty($keys)) {
             $key = array_shift($keys);
             $config[$key] = $this->setValue($keys, $value, isset($config[$key]) ? $config[$key] : []);
@@ -68,7 +74,8 @@ class Config
         }
     }
 
-    private function expand($array, $prefix = null) {
+    private function expand($array, $prefix = null)
+    {
         $config = [];
         if (!is_array($array))
             return $config;
@@ -81,6 +88,26 @@ class Config
         if ($prefix)
             $config[$prefix] = $array;
         return $config;
+    }
+
+    public function offsetExists($offset): bool
+    {
+        return isset($this->config[$this->context][$offset]);
+    }
+
+    public function offsetGet($offset)
+    {
+        return $this->config[$this->context][$offset];
+    }
+
+    public function offsetSet($offset, $value): void
+    {
+        $this->set($offset, $value);
+    }
+
+    public function offsetUnset($offset): void
+    {
+        // Do nothing for now ...
     }
 
 }
