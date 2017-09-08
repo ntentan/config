@@ -10,10 +10,10 @@ class Config implements \ArrayAccess
 
     /**
      * Reads the configurations stored at a given path.
-     * 
+     *
      * Path could either point to a directory or a specific file. In the case of
      * a file, the contents of the file are read into the config object. However,
-     * in the case of a directory, the contents of all the files in the directory 
+     * in the case of a directory, the contents of all the files in the directory
      * are read into the config file with configurations from each file prefixed with
      * the file name.
      *
@@ -27,7 +27,7 @@ class Config implements \ArrayAccess
             $this->config = ['default' => $this->expand($dir->parse())];
             foreach ($dir->getContexts() as $context) {
                 $this->config[$context] = array_merge(
-                        $this->config['default'], $this->expand($dir->parse($context))
+                    $this->config['default'], $this->expand($dir->parse($context))
                 );
             }
         } else if (is_file($path)) {
@@ -53,21 +53,26 @@ class Config implements \ArrayAccess
         $this->context = $context;
     }
 
+
     public function set($key, $value)
     {
         $keys = explode('.', $key);
         $this->config[$this->context] = $this->setValue($keys, $value, $this->config[$this->context]);
         $this->config[$this->context][$key] = $value;
-        if (is_array($value)) {
-            $this->config[$this->context] += $this->expand($value, $key);
-        }
     }
 
-    private function setValue($keys, $value, $config)
+    private function setValue($keys, $value, $config, $nested = [], &$merge = [])
     {
         if (!empty($keys)) {
             $key = array_shift($keys);
-            $config[$key] = $this->setValue($keys, $value, isset($config[$key]) ? $config[$key] : []);
+            $nested[] = $key;
+            $config[$key] = $this->setValue($keys, $value, isset($config[$key]) ? $config[$key] : [], $nested, $merge);
+            if(count($nested) > 1) {
+                $merge[implode('.', $nested)] = $config[$key];
+            }
+            else if(count($nested) == 1) {
+                $config = array_merge($config, $merge);
+            }
             return $config;
         } else {
             return $value;
