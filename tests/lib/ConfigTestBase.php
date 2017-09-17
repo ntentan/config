@@ -3,13 +3,14 @@
 namespace ntentan\config\tests\lib;
 
 use ntentan\config\Config;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Description of ConfigTest
  *
  * @author ekow
  */
-class ConfigTestBase extends \PHPUnit_Framework_TestCase
+class ConfigTestBase extends TestCase
 {
     protected $config;
 

@@ -2,7 +2,7 @@
 
 namespace ntentan\config;
 
-class Config implements \ArrayAccess
+class Config
 {
 
     private $config;
@@ -53,12 +53,17 @@ class Config implements \ArrayAccess
         $this->context = $context;
     }
 
-
     public function set($key, $value)
     {
         $keys = explode('.', $key);
         $this->config[$this->context] = $this->setValue($keys, $value, $this->config[$this->context]);
         $this->config[$this->context][$key] = $value;
+        if(is_array($value)) {
+            $merge = $this->expand($value);
+            foreach($merge as $mergeKey => $mergeValue) {
+                $this->config[$this->context]["$key.$mergeKey"] = $mergeValue;
+            }
+        }
     }
 
     private function setValue($keys, $value, $config, $nested = [], &$merge = [])
@@ -67,10 +72,9 @@ class Config implements \ArrayAccess
             $key = array_shift($keys);
             $nested[] = $key;
             $config[$key] = $this->setValue($keys, $value, isset($config[$key]) ? $config[$key] : [], $nested, $merge);
-            if(count($nested) > 1) {
+            if (count($nested) > 1) {
                 $merge[implode('.', $nested)] = $config[$key];
-            }
-            else if(count($nested) == 1) {
+            } else if (count($nested) == 1) {
                 $config = array_merge($config, $merge);
             }
             return $config;
@@ -82,37 +86,18 @@ class Config implements \ArrayAccess
     private function expand($array, $prefix = null)
     {
         $config = [];
-        if (!is_array($array))
+        if (!is_array($array)) {
             return $config;
+        }
         $dottedPrefix = $prefix ? "$prefix." : "";
         foreach ($array as $key => $value) {
             $newPrefix = $dottedPrefix . $key;
             $config[$newPrefix] = $value;
             $config += $this->expand($value, $newPrefix);
         }
-        if ($prefix)
+        if ($prefix) {
             $config[$prefix] = $array;
+        }
         return $config;
     }
-
-    public function offsetExists($offset): bool
-    {
-        return isset($this->config[$this->context][$offset]);
-    }
-
-    public function offsetGet($offset)
-    {
-        return $this->config[$this->context][$offset];
-    }
-
-    public function offsetSet($offset, $value): void
-    {
-        $this->set($offset, $value);
-    }
-
-    public function offsetUnset($offset): void
-    {
-        // Do nothing for now ...
-    }
-
 }

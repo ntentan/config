@@ -209,18 +209,28 @@ class ConfigTests extends ConfigTestBase
         $this->assertEquals('Hello', $config->get('db.driver'));
     }
     
-    public function testEmptySetDirectory()
+    public function testEmptySetArray()
     {
         $config = new Config();
         $config->set('db.driver', [
             'key1' => 'value1',
-            'key2' => 'value2'
+            'key2' => 'value2',
+            'nested' => [
+                'key3' => 'value3',
+                'key4' => 'value4'
+            ]
         ]);
         $this->assertEquals(
-            ['key1' => 'value1', 'key2' => 'value2'], 
+            ['key1' => 'value1', 'key2' => 'value2',
+                'nested' => [
+                    'key3' => 'value3',
+                    'key4' => 'value4'
+                ]
+            ], 
             $config->get('db.driver')
         );
         $this->assertEquals('value1', $config->get('db.driver.key1'));
+        $this->assertEquals('value4', $config->get('db.driver.nested.key4'));
     }
     
     public function testConfigFile()

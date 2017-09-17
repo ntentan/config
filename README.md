@@ -7,6 +7,7 @@ Ntentan Config
 [![Latest Stable Version](https://poser.pugx.org/ntentan/config/version.svg)](https://packagist.org/packages/ntentan/config)
 [![Total Downloads](https://poser.pugx.org/ntentan/config/downloads)](https://packagist.org/packages/ntentan/config)
 
-Config provides a centralized configuration repository through which applications 
-and their components can manage their configuration information. Config can read 
-configurations from single files or from directories (recursively).
+Provides a central service through which components of an application can manage
+their configurations. Config can read single files and can also read entire directories. When reading directories, config compresses the entire tree into
+a single key-value associative array with the directory structure compressed into
+dot-separated keys.
